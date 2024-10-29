@@ -1,0 +1,41 @@
+
+name: Machine Learning CI/CD
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  training-pipeline:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+          
+      - name: Build training pipeline container
+        run: |
+          docker build -t training-pipeline -f Dockerfile.training .
+          
+      - name: Push to container registry
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        run: |
+          echo ${{ secrets.DOCKER_PASSWORD }} | docker login -u ${{ secrets.DOCKER_USERNAME }} --password-stdin
+          docker tag training-pipeline ${{ secrets.DOCKER_USERNAME }}/occupancy-training:${{ github.sha }}
+          docker push ${{ secrets.DOCKER_USERNAME }}/occupancy-training:${{ github.sha }}
+
+  prediction-server:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      
+      - name: Build prediction server container
+        run: |
+          docker build -t prediction-server -f Dockerfile.server .
+          
+      - name: Push to container registry
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        run: |
+          echo ${{ secrets.DOCKER_PASSWORD }} | docker login -u ${{ secrets.DOCKER_USERNAME }} --password-stdin
+          docker tag prediction-server ${{ secrets.DOCKER_USERNAME }}/occupancy-service:${{ github.sha }}
+          docker push ${{ secrets.DOCKER_USERNAME }}/occupancy-service:${{ github.sha }}
