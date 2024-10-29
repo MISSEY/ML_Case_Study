@@ -1,0 +1,21 @@
+FROM python:3.10.15
+
+ADD . /ml_pipeline
+
+RUN apt -q -qq update && \
+  DEBIAN_FRONTEND=noninteractive apt install -y \
+  software-properties-common \
+  wget
+
+RUN apt-get update && \
+  apt-get upgrade -y && \
+  apt-get install -y git
+
+RUN apt-get update -y && \
+    pip install xgboost pandas scikit-learn matplotlib seaborn requests fastapi uvicorn
+
+RUN apt-get autoremove -yqq --purge && \
+    apt-get clean && \
+    rm -rf /var/lib/apt/lists/*
+
+CMD ["python", "-m", "ml_pipeline/occupancy.py"]
