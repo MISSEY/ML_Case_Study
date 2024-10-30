@@ -41,4 +41,4 @@ filepath=`pwd`
 git config --global --add safe.directory $filepath
 git pull origin main
 
-dvc pull "$dvc_file"
+dvc pull -f "$dvc_file"

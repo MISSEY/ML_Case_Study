@@ -380,6 +380,6 @@ if __name__ == "__main__":
     parser =prepare_args()
     args = parser.parse_args()
     if args.evaluate:
-        evaluate(data_path=args.data_path,model_path=args.model_path)
+        print(evaluate(data_path=args.data_path,model_path=args.model_path))
     else:
-        train(data_path=args.data_path,model_path=args.model_path)
+        print(train(data_path=args.data_path,model_path=args.model_path))

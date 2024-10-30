@@ -47,13 +47,13 @@ cd ML_Case_Study
 2. Build and run the training container:
 ```bash
 docker build -t training-pipeline -f Dockerfile.training .
-docker run --mount type=bind,source="<occupancy_data>",target=/ml_pipeline/occupancy_data --mount type=bind,source="<models>",target=/ml_pipeline/models training-pipeline 
+docker run --mount type=bind,source="<occupancy_data>",target=/ml_pipeline/occupancy_data --mount type=bind,source="<models>",target=/ml_pipeline/models training-pipeline -m <model-path> -d <data-path>
 ```
 
 3. Build and run the prediction server:
 ```bash
 docker build -t prediction-server -f Dockerfile.server .
-docker run --mount type=bind,source="<occupancy_data>",target=/ml_pipeline/occupancy_data --mount type=bind,source="<models>",target=/ml_pipeline/models -p 8000:8000 prediction-server
+docker run --mount type=bind,source="<occupancy_data>",target=/ml_pipeline/occupancy_data --mount type=bind,source="<models>",target=/ml_pipeline/models -p 8000:8000 prediction-server -m <model-path>
 ```
 
 ### API Usage
