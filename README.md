@@ -10,6 +10,8 @@ The system predicts room occupancy based on various sensor data inputs using XGB
 - FastAPI-based model endpoint
 - Automated CI/CD pipeline using GitHub Actions
 - Docker container registry integration
+- DVC-based data versioning and ML pipelines
+- Airflow orchestration for automated ML task
 
 ## Repository Structure
 
@@ -19,6 +21,8 @@ The system predicts room occupancy based on various sensor data inputs using XGB
 ├── inference_server.py # FastAPI model endpoint           
 ├── Dockerfile.training    # Docker configuration for training
 ├── Dockerfile.server      # Docker configuration for model serving
+├── Dockerfile.data_versioning      # Docker configuration for dvc
+├── dvc_pull.sh     # Script for dvc operation to manage datasets and models
 ├── .github/
 │   └── workflows/
 │       └── ci-cd.yml      # CI/CD pipeline configuration
@@ -99,3 +103,30 @@ To use the CI/CD pipeline, set up the following secrets in your GitHub repositor
 The project produces two Docker images:
 1. `smishra03/occupancy-training:latest` - Training pipeline
 2. `smishra03/occupancy-service:latest` - Prediction server
+
+
+## MLOps 
+
+### Data Version Control (DVC)
+
+DVC usually runs along with Git. Git is used as usual to store and version code (including DVC meta-files). 
+DVC helps to store data and model files seamlessly out of Git, while preserving almost the same user experience as if 
+they were stored in Git itself. [Follow this link to know more](https://github.com/iterative/dvc#how-dvc-works)
+
+#### Dataset and saved model version control
+
+`git checkout` and `dvc checkout` commands are used together to restore the corresponding versions of the DVC-tracked data files and directories from the cache to the workspace.
+`dvc checkout` must be executed after `git checkout` because, git controls the version of .dvc files and dvc works on top of git.
+````
+git checkout <commit-tag>
+dvc checkout <file name>
+````
+
+### Airflow DAG Structure
+
+An Airflow DAG (Directed Acyclic Graph) is a way of organizing tasks and defining relationships between them.
+Relationships refer to how a certain task is associated with the previous and subsequent tasks in a pipeline.
+For a better understanding of DAGs, refer to the [official tutorial](https://airflow.apache.org/docs/apache-airflow/stable/tutorial/index.html).
+
+![alt text](image.png)
+
