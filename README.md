@@ -128,5 +128,6 @@ An Airflow DAG (Directed Acyclic Graph) is a way of organizing tasks and definin
 Relationships refer to how a certain task is associated with the previous and subsequent tasks in a pipeline.
 For a better understanding of DAGs, refer to the [official tutorial](https://airflow.apache.org/docs/apache-airflow/stable/tutorial/index.html).
 
+
 ![alt text](image.png)
 
