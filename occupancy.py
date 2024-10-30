@@ -392,8 +392,7 @@ if __name__ == "__main__":
     else:
         roc_auc = train(data_path=args.data_path,model_path=args.model_path)
     
-    return_json = {"roc_auc": f"{roc_auc}"}
+    return_json = {"roc_auc": float(roc_auc)}
 
-    f = open("/airflow/xcom/return.json", "w")
-    f.write(f"{return_json}")
-    f.close()
+    with open('/airflow/xcom/return.json', 'w') as f:
+        json.dump(return_json, f)
