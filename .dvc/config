@@ -1,0 +1,7 @@
+[core]
+    remote = minio_production
+
+['remote "minio_production"']
+    url = s3://public/dvc
+    endpointurl = http://10.249.6.35:9000
+    ssl_verify = False

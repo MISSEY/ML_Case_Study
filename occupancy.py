@@ -9,12 +9,13 @@ from matplotlib import pyplot as plt
 import seaborn as sns
 import os 
 import joblib
-
+import argparse
 
 class Occupancy:
-    def __init__(self):
+    def __init__(self,model_path):
         self.scaler = StandardScaler()
         self.model = None
+        self.model_path = model_path
 
     def load_data(self, data_path):
         """Load and preprocess the data"""
@@ -179,17 +180,17 @@ class Occupancy:
         
         return self.model
     
-    def save_model(self, model_dir='models/'):
+    def save_model(self):
         """Save trained model and scaler"""
         if self.model is None:
             raise ValueError("Model has not been trained yet")
         
         # Create directory if it doesn't exist
-        os.makedirs(model_dir, exist_ok=True)
+        os.makedirs(self.model_path, exist_ok=True)
         
         # Save model and scaler
-        model_path = os.path.join(model_dir, 'xgboost_model.joblib')
-        scaler_path = os.path.join(model_dir, 'scaler.joblib')
+        model_path = os.path.join(self.model_path, 'xgboost_model.joblib')
+        scaler_path = os.path.join(self.model_path, 'scaler.joblib')
         
         joblib.dump(self.model, model_path)
         joblib.dump(self.scaler, scaler_path)
@@ -197,10 +198,10 @@ class Occupancy:
         print(f"Model saved to: {model_path}")
         print(f"Scaler saved to: {scaler_path}")
     
-    def load_model(self, model_dir='models/'):
+    def load_model(self,):
         """Load saved model and scaler"""
-        model_path = os.path.join(model_dir, 'xgboost_model.joblib')
-        scaler_path = os.path.join(model_dir, 'scaler.joblib')
+        model_path = os.path.join(self.model_path, 'xgboost_model.joblib')
+        scaler_path = os.path.join(self.model_path, 'scaler.joblib')
         
         if not os.path.exists(model_path) or not os.path.exists(scaler_path):
             raise FileNotFoundError("Model or scaler file not found")
@@ -304,15 +305,20 @@ class Occupancy:
         
         return roc_auc
 
-def main():
+def train(data_path,model_path):
+
+    
+    if data_path is None:
+        data_path = 'occupancy_data'
+        model_path = 'models'
 
     # Initialize pipeline
-    pipeline = Occupancy()
+    pipeline = Occupancy(model_path=model_path)
     
     # Load and preprocess data
-    df_train = pipeline.load_data('occupancy_data/datatraining.txt')
+    df_train = pipeline.load_data(f'{data_path}/datatraining.txt')
     df_train = pipeline.feature_engineering(df_train)
-    df_test = pipeline.load_data('occupancy_data/datatest.txt')
+    df_test = pipeline.load_data(f'{data_path}/datatest.txt')
     df_test = pipeline.feature_engineering(df_test)
     # Prepare features
     X_train, y_train = pipeline.prepare_features(df_train)
@@ -326,27 +332,54 @@ def main():
     roc_auc = pipeline.evaluate(X_test, y_test)
     print("\nSaving model...")
     pipeline.save_model()
+    return roc_auc
 
-def load_and_predict():
+def evaluate(data_path,model_path):
     # Initialize pipeline
-    pipeline = Occupancy()
-    df_test = pipeline.load_data('occupancy_data/datatest.txt')
+    if data_path is None:
+        data_path = 'occupancy_data'
+        model_path = 'models'
+
+    # Initialize pipeline
+    pipeline = Occupancy(model_path=model_path)
+
+    df_test = pipeline.load_data(f'{data_path}/datatest.txt')
     # Load saved model
     print("Loading model...")
     pipeline.load_model()
-    data = df_test.iloc[1550].to_dict()
+    df_test = pipeline.feature_engineering(df_test)
+    X_test, y_test = pipeline.prepare_features(df_test)
+    roc_auc = pipeline.evaluate(X_test, y_test)
+    return roc_auc
+    # data = df_test.iloc[1550].to_dict()
     
-    # Make prediction
-    print("\nMaking prediction...")
+    # # Make prediction
+    # print("\nMaking prediction...")
 
-    print('GT:','Yes' if data['Occupancy'] else 'No')
+    # print('GT:','Yes' if data['Occupancy'] else 'No')
 
-    data.pop('Occupancy',None)
-    result = pipeline.predict_single(data)
-    print("\nPrediction result:")
-    print(f"Timestamp: {result['timestamp']}")
-    print(f"Occupied: {'Yes' if result['occupied'] else 'No'}")
-    print(f"Probability: {result['probability']:.4f}")
+    # data.pop('Occupancy',None)
+    # result = pipeline.predict_single(data)
+    # print("\nPrediction result:")
+    # print(f"Timestamp: {result['timestamp']}")
+    # print(f"Occupied: {'Yes' if result['occupied'] else 'No'}")
+    # print(f"Probability: {result['probability']:.4f}")
+
+def prepare_args():
+    """
+    prepare arguments
+    """
+    parser = argparse.ArgumentParser()
+    parser.add_argument('-e', '--evaluate', action='store_true',required=False,help='evaluate')
+    parser.add_argument('-d', '--data_path',default=None,required=False,help='data path')
+    parser.add_argument('-m', '--model_path',default=None,required=False,help='model path')
+
+    return parser
 
 if __name__ == "__main__":
-    main()
+    parser =prepare_args()
+    args = parser.parse_args()
+    if args.evaluate:
+        evaluate(data_path=args.data_path,model_path=args.model_path)
+    else:
+        train(data_path=args.data_path,model_path=args.model_path)

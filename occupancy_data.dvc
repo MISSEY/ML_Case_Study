@@ -1,0 +1,6 @@
+outs:
+- md5: d5250624000408af32909c981bd5611a.dir
+  size: 1775834
+  nfiles: 5
+  hash: md5
+  path: occupancy_data

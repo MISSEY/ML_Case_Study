@@ -3,3 +3,5 @@ __pycache__
 *.pt
 occupancy_data/*
 models/*
+/models
+/occupancy_data
