@@ -7,6 +7,8 @@ import joblib
 import logging
 import uvicorn
 from typing import Dict
+import time
+
 
 # Configure logging
 logging.basicConfig(
@@ -51,13 +53,26 @@ class SensorData(BaseModel):
 class OccupancyPredictor:
     def __init__(self, model_path: str, scaler_path: str):
         """Initialize the predictor with model and scaler"""
+        self.model_path = model_path
+        self.scaler_path = scaler_path
+        self.model = None
+        self.scaler=None
+        self.last_loaded = None
+        self.load_model()
+
+    def load_model(self):
+        """Load model and update timestamp"""
         try:
-            self.model = joblib.load(model_path)
-            self.scaler = joblib.load(scaler_path)
-            logging.info("Model and scaler loaded successfully")
+            self.model = joblib.load(self.model_path)
+            self.scaler = joblib.load(self.scaler_path)
+            self.last_loaded = datetime.now()
+            print(f"Model loaded successfully at {self.last_loaded}")
         except Exception as e:
-            logging.error(f"Error loading model or scaler: {str(e)}")
-            raise
+            print(f"Error loading model: {e}")
+    
+    def get_model(self):
+        """Get current model instance"""
+        return self.model
     
     def create_features(self, data: SensorData) -> pd.DataFrame:
         """Create features from sensor data"""

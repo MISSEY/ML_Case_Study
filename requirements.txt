@@ -1,0 +1,9 @@
+xgboost 
+pandas 
+scikit-learn 
+matplotlib 
+seaborn 
+requests 
+fastapi 
+uvicorn
+watchdog

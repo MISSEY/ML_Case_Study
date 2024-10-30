@@ -1,2 +1,7 @@
 2024-10-29 14:58:35,916 - INFO - Model and scaler loaded successfully
 2024-10-29 15:00:52,762 - INFO - Prediction generated: 1 (probability: 0.967)
+2024-10-30 11:09:42,494 - INFO - Model and scaler loaded successfully
+2024-10-30 11:10:19,447 - INFO - Model and scaler loaded successfully
+2024-10-30 11:31:02,695 - ERROR - Error generating prediction: 'OccupancyPredictor' object has no attribute 'scaler'
+2024-10-30 11:31:02,697 - ERROR - Prediction error: 'OccupancyPredictor' object has no attribute 'scaler'
+2024-10-30 11:33:08,536 - INFO - Prediction generated: 1 (probability: 0.996)
