@@ -388,11 +388,10 @@ if __name__ == "__main__":
     parser =prepare_args()
     args = parser.parse_args()
     if args.evaluate:
-        roc_auc = evaluate(data_path=args.data_path,model_path=args.model_path)
+        xcom_value = evaluate(data_path=args.data_path,model_path=args.model_path)
     else:
-        roc_auc = train(data_path=args.data_path,model_path=args.model_path)
+        xcom_value = train(data_path=args.data_path,model_path=args.model_path)
     
-    return_json = {"roc_auc": float(roc_auc)}
 
     with open('/airflow/xcom/return.json', 'w') as f:
-        json.dump(return_json, f)
+        json.dump(xcom_value, f)
