@@ -4,6 +4,9 @@ ADD . /ml_pipeline
 
 WORKDIR /ml_pipeline
 
+RUN mkdir -p /airflow/xcom
+RUN echo "" > /airflow/xcom/return.json
+
 RUN apt -q -qq update && \
   DEBIAN_FRONTEND=noninteractive apt install -y \
   software-properties-common \
