@@ -10,6 +10,8 @@ import seaborn as sns
 import os 
 import joblib
 import argparse
+import json
+
 
 class Occupancy:
     def __init__(self,model_path):
@@ -332,7 +334,10 @@ def train(data_path,model_path):
     roc_auc = pipeline.evaluate(X_test, y_test)
     print("\nSaving model...")
     pipeline.save_model()
-    return roc_auc
+    xcom_value = {
+        'roc_auc': float(roc_auc),  # Convert numpy float to Python float
+    }
+    return xcom_value
 
 def evaluate(data_path,model_path):
     # Initialize pipeline
@@ -350,7 +355,10 @@ def evaluate(data_path,model_path):
     df_test = pipeline.feature_engineering(df_test)
     X_test, y_test = pipeline.prepare_features(df_test)
     roc_auc = pipeline.evaluate(X_test, y_test)
-    return roc_auc
+    xcom_value = {
+        'roc_auc': float(roc_auc),  # Convert numpy float to Python float
+    }
+    return xcom_value
     # data = df_test.iloc[1550].to_dict()
     
     # # Make prediction
@@ -380,6 +388,8 @@ if __name__ == "__main__":
     parser =prepare_args()
     args = parser.parse_args()
     if args.evaluate:
-        print(evaluate(data_path=args.data_path,model_path=args.model_path))
+        roc_auc = evaluate(data_path=args.data_path,model_path=args.model_path)
     else:
-        print(train(data_path=args.data_path,model_path=args.model_path))
+        roc_auc = train(data_path=args.data_path,model_path=args.model_path)
+    
+    print(f"{{{{xcom_push}}}}roc_auc={roc_auc}")
