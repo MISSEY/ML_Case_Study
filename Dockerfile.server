@@ -2,6 +2,8 @@ FROM python:3.10.15
 
 ADD . /ml_pipeline
 
+WORKDIR /ml_pipeline
+
 RUN apt -q -qq update && \
   DEBIAN_FRONTEND=noninteractive apt install -y \
   software-properties-common \
