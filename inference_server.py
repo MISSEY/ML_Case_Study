@@ -8,7 +8,7 @@ import logging
 import uvicorn
 from typing import Dict
 import time
-
+import argparse
 
 # Configure logging
 logging.basicConfig(
@@ -19,6 +19,15 @@ logging.basicConfig(
         logging.StreamHandler()
     ]
 )
+
+def prepare_args():
+    """
+    prepare arguments
+    """
+    parser = argparse.ArgumentParser()
+    parser.add_argument('-m', '--model_path',default=None,required=False,help='model path')
+
+    return parser
 
 # Initialize FastAPI app
 app = FastAPI(title="Room Occupancy Prediction Service")
@@ -137,9 +146,15 @@ class OccupancyPredictor:
 
 # Initialize predictor
 try:
+    parser =prepare_args()
+    args = parser.parse_args()
+    path = args.model_path
+    if path is None:
+        path = 'models'
+    
     predictor = OccupancyPredictor(
-        model_path='models/xgboost_model.joblib',
-        scaler_path='models/scaler.joblib'
+        model_path=f'{path}/xgboost_model.joblib',
+        scaler_path=f'{path}/scaler.joblib'
     )
 except Exception as e:
     logging.error(f"Failed to initialize predictor: {str(e)}")

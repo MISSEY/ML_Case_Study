@@ -22,4 +22,4 @@ RUN apt-get autoremove -yqq --purge && \
 
 EXPOSE 8000
 
-CMD ["uvicorn" "inference_server:app"]
+ENTRYPOINT ["python" "inference_server.py"]
